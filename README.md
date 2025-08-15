@@ -1,0 +1,1 @@
+# next-strapi-app-qa

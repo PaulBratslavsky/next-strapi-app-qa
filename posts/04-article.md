@@ -1,9 +1,9 @@
-In the previous tutorial, we finished our **Home Page**, so we will build out our **Sign In** and **Sign Up** Pages and hook up the logic to allow us to sign in and sign up.
+In the previous tutorial, we completed our **Home Page**. Now we'll build out our **Sign In** and **Sign Up** pages and implement the authentication logic to enable user registration and login.
 
 - [Part 1: Learn Next.js by building a website](https://strapi.io/blog/epic-next-js-14-tutorial-learn-next-js-by-building-a-real-life-project-part-1-2)
 - [Part 2: Building Out The Hero Section of the homepage](https://strapi.io/blog/epic-next-js-14-tutorial-part-2-building-out-the-home-page)
 - [Part 3: Finishing up the homepage Features Section, TopNavigation and Footer](https://strapi.io/blog/epic-next-js-14-tutorial-learn-next-js-by-building-a-real-life-project-part-3)
-- **Part 4: How to handle login and Authentification in Next.js**
+- **Part 4: How to handle login and Authentication in Next.js**
 - [Part 5: Building out the Dashboard page and uploading file using NextJS server actions](https://strapi.io/blog/epic-next-js-14-tutorial-part-5-file-upload-using-server-actions)
 - [Part 6: Get Video Transcript with OpenAI Function](https://strapi.io/blog/epic-next-js-14-tutorial-part-6-create-video-summary-with-next-js-and-open-ai)
 - [Part 7: Strapi CRUD permissions](https://strapi.io/blog/epic-next-js-14-tutorial-part-7-next-js-and-strapi-crud-permissions)
@@ -15,19 +15,19 @@ Let's start by creating our routes.
 
 ## How To Group Routes In Next.js
 
-Next, we can group our routes and create shared layouts; you can read more [here](https://nextjs.org/docs/app/building-your-application/routing/colocation#route-groups), but for our use case, we will create a route group called `auth`, to make a route a group, you will create a folder whose name will be between parentheses.
+Next.js allows us to group routes and create shared layouts. You can read more [here](https://nextjs.org/docs/app/building-your-application/routing/colocation#route-groups). For our use case, we'll create a route group called `auth`. To create a route group, you create a folder with a name enclosed in parentheses.
 
 Our folder structure will look like the following.
 
 ![002-shared-routes.png](https://api-prod.strapi.io/uploads/002_shared_routes_777a620c19.png)
 
-- Folder named `(auth)`
-- Inside the `(auth)` folder, create two additional folders, `signin` and `signup`, with a blank `page.tsx` file.
-- Finally, inside the `(auth)` folder, create a file called `layout.tsx` to function as our shared layout between our `signin` and `signup` pages.
+- A folder named `(auth)`
+- Inside the `(auth)` folder, create two additional folders: `signin` and `signup`, each with a blank `page.tsx` file
+- Finally, inside the `(auth)` folder, create a file called `layout.tsx` to serve as our shared layout between the `signin` and `signup` pages
 
 You can learn more about the `layout.tsx` file in Next.js docs [here](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#layouts)
 
-Now that we have our basic folder structure. Let's create the following components.
+Now that we have our basic folder structure, let's create the following components.
 
 In the `layout.tsx` file, paste the following code.
 
@@ -61,7 +61,7 @@ export default function SingUpRoute() {
 }
 ```
 
-After creating the following components you should be able to navigate to our `signin` page via the link.
+After creating these components, you should be able to navigate to our `signin` page via the link.
 
 <video width="100%" height="auto" autoplay loop muted playsinline>
   <source src="https://delicate-dawn-ac25646e6d.media.strapiapp.com/04_article_signin_page_6bf9e3b45c.mp4">
@@ -70,7 +70,7 @@ After creating the following components you should be able to navigate to our `s
 
 ## Building Our Signin and Signup Form
 
-Let's navigate to `app/components` and create a new folder called `forms`. Inside that folder, create two new files called `signin-form.tsx` and `signup-form.tsx` and paste the following code for the respective components.
+Let's navigate to `app/components` and create a new folder called `forms`. Inside that folder, create two new files: `signin-form.tsx` and `signup-form.tsx`, and paste the following code for the respective components.
 
 `signin-form.tsx`
 
@@ -237,17 +237,17 @@ export function SignupForm() {
 }
 ```
 
-Since we are using **Shadcn UI**, we need to install the `card`, `input`, and `label` components since we are using them in the code above.
+Since we're using **Shadcn UI**, we need to install the `card`, `input`, and `label` components that we're using in the code above.
 
 You can learn more about **Shadcn UI** [here](https://ui.shadcn.com/docs)
 
-We can install the components by running the following code.
+We can install the components by running the following command:
 
 ```bash
   npx shadcn@latest add card label input
 ```
 
-Now that we have installed our components, let's navigate to `app/(auth)/signin/page.tsx` and import and add our newly created `SigninForm` component.
+Now that we've installed our components, let's navigate to `app/(auth)/signin/page.tsx` and import our newly created `SigninForm` component.
 
 The final code should look like the following.
 
@@ -259,7 +259,7 @@ export default function SingInRoute() {
 }
 ```
 
-Let's do the same inside the `signup/page.tsx` file by updating the following.
+Let's do the same for the `signup/page.tsx` file by updating it as follows:
 
 ```tsx
 import { SignupForm } from "@/components/forms/signup-form";
@@ -269,32 +269,32 @@ export default function SingUoRoute() {
 }
 ```
 
-Now restart your frontend Next.js application. You should see the following when navigating the **Sign In** page.
+Now restart your frontend Next.js application. You should see the following when navigating to the **Sign In** page:
 
 <video width="100%" height="auto" autoplay loop muted playsinline>
   <source src="https://delicate-dawn-ac25646e6d.media.strapiapp.com/004_sign_in_sign_up_forms_04aa59d412.mp4">
   Your browser does not support the video tag.
 </video>
 
-Nice, we now have both of our forms. Before getting into the details of how to implement our form submission via **Server Actions**, here are some great resources to learn more about the process [MDN HTML Forms](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) and specific to Next.js [Server Action & Mutations](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
+Excellent! We now have both of our forms. Before diving into the details of implementing form submission via **Server Actions**, here are some great resources to learn more about the process: [MDN HTML Forms](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) and specific to Next.js [Server Action & Mutations](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
 
-Now let's dive in in building out our `SignupForm`.
+Now let's dive into building out our `SignupForm`.
 
 ## Form Submission Using Next.js Server Actions
 
-We will first focus on our `SignupForm`, and then, after we understand how things work, we will make the same changes inside our `SigninForm`.
+We'll first focus on our `SignupForm`, and then, after we understand how things work, we'll make the same changes to our `SigninForm`.
 
-While building our form, let's consider these items in the context of Next.js.
+While building our form, let's consider these key concepts in the context of Next.js:
 
-- we can get form values via the `name` attribute in the `input` fields inside the form.
-- the form will have an action attribute pointing to a server action.
-- when we click the `button` with the submit, it will submit the form and trigger our action.
-- we will be able to access our data inside server action via FormData
-- Inside the server action, our business logic will handle our signup via our **Strapi** backend.
+- We can get form values via the `name` attribute in the `input` fields inside the form
+- The form will have an action attribute pointing to a server action
+- When we click the submit `button`, it will submit the form and trigger our action
+- We'll be able to access our data inside the server action via FormData
+- Inside the server action, our business logic will handle signup via our **Strapi** backend
 
-Let's start by defining our first Next.js server actions. Navigate to `src/app/data` and create a new folder called `actions` with `index.ts` and `auth.ts` files.
+Let's start by defining our first Next.js server action. Navigate to `src/app/data` and create a new folder called `actions` with `index.ts` and `auth.ts` files.
 
-Inside our newly created `auth.ts` file, let's paste the following code.
+Inside our newly created `auth.ts` file, let's paste the following code:
 
 ```ts
 "use server";
@@ -304,7 +304,7 @@ export async function registerUserAction(formData: FormData) {
 }
 ```
 
-and in the `index.ts` file paste in the following:
+And in the `index.ts` file, paste the following:
 
 ```ts
 import { registerUserAction } from "./auth";
@@ -316,13 +316,13 @@ export const actions = {
 };
 ```
 
-Now let's import our `registerUserAction` inside our `signup-form.tsx` file and add it to our form action.
+Now let's import our `registerUserAction` in our `signup-form.tsx` file and add it to our form action.
 
 ```jsx
 import { actions } from "@/data/actions";
 ```
 
-Update the form attribute with the following:
+Update the form action attribute with the following:
 
 ```tsx
 {
@@ -334,26 +334,26 @@ Update the form attribute with the following:
 }
 ```
 
-Now, you should be able to click the `Sign Up` button, and we should see our console log in our terminal since it is being executed on the server.
+Now, you should be able to click the `Sign Up` button, and we should see our console log in our terminal since it's being executed on the server.
 
 <video width="100%" height="auto" autoplay loop muted playsinline>
   <source src="https://delicate-dawn-ac25646e6d.media.strapiapp.com/004_article_server_action_test_6fb5dc7781.mp4">
   Your browser does not support the video tag.
 </video>
 
-Nice. Now that we know how to trigger our `server action` via our form submission. Let's examine how we can access our form data via our **FormData**.
+Excellent! Now that we know how to trigger our `server action` via form submission, let's examine how we can access our form data via **FormData**.
 
 ## How To Access FormData Inside Next.js Server Action
 
-For additional reading, I recommend checking out [this post](https://developer.mozilla.org/en-US/docs/Web/API/FormData) about **FormData** on MDN, but we will be using the `get` method to get our values.
+For additional reading, I recommend checking out [this post](https://developer.mozilla.org/en-US/docs/Web/API/FormData) about **FormData** on MDN, but we'll be using the `get` method to retrieve our values.
 
-When we submit our form, the values will be passed down to our server action via the form data using the input `name` attribute as the key to our value.
+When we submit our form, the values will be passed to our server action via FormData using the input `name` attribute as the key for our value.
 
 For example, we can retrieve our data using `FormData.get("username")` for the following input.
 
 ![006-input-example.png](https://api-prod.strapi.io/uploads/006_input_example_cdefd4f8f5.png)
 
-With the following code, let's update our `registerUserAction` action in the `auth.ts` file.
+Let's update our `registerUserAction` action in the `auth.ts` file with the following code:
 
 ```ts
 "use server";
@@ -393,21 +393,21 @@ Hello From Register User Action
 
 We can now get our data in our `server action`, but how do we return or validate it?
 
-Well, that is what we will do in our next section.
+That's what we'll cover in our next section.
 
 ## How To Get Form State With useActionState Hook
 
-We will use React's `useActionState` hook to return data from our `server action`. You can learn more [here](https://react.dev/reference/react/useActionState).
+We'll use React's `useActionState` hook to return data from our `server action`. You can learn more [here](https://react.dev/reference/react/useActionState).
 
 Back in the `signup-form.tsx` file.
 
-We will first import our `useActionState` hook from `react-dom`.
+We'll first import our `useActionState` hook from `react-dom`:
 
 ```tsx
 import { useActionState } from "react";
 ```
 
-Now, let's create a variable to store our initial state.
+Now, let's create a variable to store our initial state:
 
 ```tsx
 const INITIAL_STATE = {
@@ -415,7 +415,7 @@ const INITIAL_STATE = {
 };
 ```
 
-Now let's use our `useActionState` hook.
+Now let's use our `useActionState` hook:
 
 ```tsx
 const [formState, formAction] = useActionState(
@@ -428,7 +428,7 @@ console.log(formState);
 console.log("###########################");
 ```
 
-And update the `form` action attribute with the following.
+And update the `form` action attribute with the following:
 
 ```jsx
   <form action={formAction}>
@@ -535,7 +535,7 @@ export function SignupForm() {
 }
 ```
 
-Finally, we have to update our `registerUserAction` action in the `auth-actions.ts` file using the following code:
+Finally, we need to update our `registerUserAction` action in the `auth.ts` file using the following code:
 
 ```ts
 "use server";
@@ -560,36 +560,36 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 }
 ```
 
-We will fix the use of `any` in a bit, when we use ZOD for validation.
+We'll fix the use of `any` in a bit when we use Zod for validation.
 
-When you submit the form, you should see our data console logged in our frontend via our `console.log(formState);` that we have in our `signup-form.tsx` file.
+When you submit the form, you should see our data console logged in our frontend via the `console.log(formState);` that we have in our `signup-form.tsx` file.
 
 <video width="100%" height="auto" autoplay loop muted playsinline>
   <source src="https://delicate-dawn-ac25646e6d.media.strapiapp.com/04_article_form_action_state_87329dcf83.mp4">
   Your browser does not support the video tag.
 </video>
 
-This is great. We are able to pass data to our `server action` and return it via `useActionState`.
+This is great! We can pass data to our `server action` and return it via `useActionState`.
 
-Before we see how to submit our form and sign in via our Strapi backend, let's examine how to handle form validation with Zod.
+Before we see how to submit our form and sign up via our Strapi backend, let's examine how to handle form validation with Zod.
 
 ## Form Validation In Next.js with Zod
 
-**Zod** is a validation library designed for use with TypeScript and JavaScript. In this project we will be using newly released Zod 4.
+**Zod** is a validation library designed for use with TypeScript and JavaScript. In this project we'll be using the newly released Zod 4.
 
 You can reference the following to see what has changed [docs](https://zod.dev/v4/changelog).
 
-It offers an expressive syntax for creating complex validation schema, which makes Zod particularly useful for validating user-generated data, such as information submitted through forms or received from API requests, to ensure the data aligns with your application's expected structures and types.
+It offers an expressive syntax for creating complex validation schemas, which makes Zod particularly useful for validating user-generated data, such as information submitted through forms or received from API requests, to ensure the data aligns with your application's expected structures and types.
 
-Let's examine how we can add Zod validation for our forms. We will choose to do the validation inside of our `server action`.
+Let's examine how we can add Zod validation for our forms. We'll choose to do the validation inside our `server action`.
 
-Let's start by installing **Zod** with the following command.
+Let's start by installing **Zod** with the following command:
 
 ```bash
 yarn add zod
 ```
 
-Once the installation is complete, go to the data directory, create a new folder named `validation`, then add a file called `auth.ts` with the following code.
+Once the installation is complete, go to the data directory, create a new folder named `validation`, then add a file called `auth.ts` with the following code:
 
 ```ts
 import { z } from "zod";
@@ -643,21 +643,21 @@ export type FormState = {
 };
 ```
 
-Here, we're setting up two **Zod** schemas — one for signing in and one for signing up — along with a FormState type to help us track what's going on with our form.
+Here, we're setting up two **Zod** schemas—one for signing in and one for signing up—along with a FormState type to help us track what's happening with our form.
 
-- **SigninFormSchema** validates that the identifier (username or email) is at least 3 characters long, and the password is between 6 and 100 characters.
-- **SignupFormSchema** validates that the username is between 3 and 20 characters, the email is valid, and the password follows the same 6–100 character rule.
+- **SigninFormSchema** validates that the identifier (username or email) is at least 3 characters long, and the password is between 6 and 100 characters
+- **SignupFormSchema** validates that the username is between 3 and 20 characters, the email is valid, and the password follows the same 6–100 character rule
 
 We also have some TypeScript types:
 
-- **SigninFormValues** and **SignupFormValues** give us the exact shape of valid form data for each schema.
+- **SigninFormValues** and **SignupFormValues** give us the exact shape of valid form data for each schema
 - **FormState** keeps track of:
-  - Whether the request was successful and any message we want to show.
-  - The actual form data we're working with.
-  - Any **Zod** validation errors before the form even gets sent.
-  - Any **Strapi API** errors we'll handle once we hook this up to our backend later in the tutorial.
+  - Whether the request was successful and any message we want to show
+  - The actual form data we're working with
+  - Any **Zod** validation errors before the form even gets sent
+  - Any **Strapi API** errors we'll handle once we hook this up to our backend later in the tutorial
 
-Now, let's update our `registerUserAction` to use our schema to validate our fields by making the following changes.
+Now, let's update our `registerUserAction` to use our schema to validate our fields by making the following changes:
 
 ```ts
 "use server";

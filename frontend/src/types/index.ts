@@ -1,3 +1,5 @@
+import type { TBlocks } from "@/app/page";
+
 export interface BaseParams {
   [key: string]: string | string[] | undefined;
 }
@@ -38,8 +40,8 @@ export type THomePage = {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
-  blocks: any; // we will change this soon
-};
+  blocks: TBlocks[];
+}
 
 export type THeader = {
   logoText: TLink;

@@ -1,7 +1,7 @@
 import { getStrapiURL } from "@/lib/utils";
-import type { TStrapiResponse, TImage } from "@/types";
+import type { TStrapiResponse, TAuthUser } from "@/types";
 import { actions } from "@/data/actions";
-import qs from "qs";
+import qs from "qs"
 
 type TRegisterUser = {
   username: string;
@@ -12,24 +12,6 @@ type TRegisterUser = {
 type TLoginUser = {
   identifier: string;
   password: string;
-};
-
-type TAuthUser = {
-  id: number;
-  documentId: string;
-  username: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  bio?: string;
-  image?: TImage;
-  credits?: number;
-  provider: string;
-  confirmed: boolean;
-  blocked: boolean;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 };
 
 type TAuthResponse = {
@@ -105,6 +87,14 @@ export async function getUserMeService(): Promise<TStrapiResponse<TAuthUser>> {
     return { success: false, data: undefined, error: undefined, status: 401 };
 
   const url = new URL("/api/users/me", baseUrl);
+
+  url.search = qs.stringify({
+    populate: {
+      image: {
+        fields: ["url", "alternativeText"],
+      },
+    },
+  });
 
   try {
     const response = await fetch(url.href, {

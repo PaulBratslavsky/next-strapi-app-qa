@@ -1,8 +1,11 @@
 import Link from "next/link";
 import type { THeader } from "@/types";
 
+import { services } from "@/data/services";
+
 import { Logo } from "@/components/custom/logo";
 import { Button } from "@/components/ui/button";
+import { LoggedInUser } from "@/components/custom/logged-in-user";
 
 const styles = {
   header:
@@ -18,14 +21,19 @@ interface IHeaderProps {
 export async function Header({ data }: IHeaderProps) {
   if (!data) return null;
 
+  const user = await services.auth.getUserMeService();
   const { logoText, ctaButton } = data;
   return (
     <div className={styles.header}>
       <Logo text={logoText.label} />
       <div className={styles.actions}>
-        <Link href={ctaButton.href}>
-          <Button>{ctaButton.label}</Button>
-        </Link>
+        {user.success && user.data ? (
+          <LoggedInUser userData={user.data} />
+        ) : (
+          <Link href={ctaButton.href}>
+            <Button>{ctaButton.label}</Button>
+          </Link>
+        )}
       </div>
     </div>
   );

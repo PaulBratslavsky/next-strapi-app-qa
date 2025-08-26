@@ -94,6 +94,7 @@ export type TAuthUser = {
   lastName?: string;
   bio?: string;
   credits?: number;
+  image?: TImage;
   provider: string;
   confirmed: boolean;
   blocked: boolean;

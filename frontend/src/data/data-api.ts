@@ -1,5 +1,4 @@
 import type { TStrapiResponse } from "@/types";
-// import { actions } from "@/data/actions";
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -7,27 +6,15 @@ type ApiOptions<P = Record<string, unknown>> = {
   method: HTTPMethod;
   payload?: P;
   timeoutMs?: number;
+  authToken?: string;
 };
 
 /**
- * Unified API function with timeout to prevent requests from hanging indefinitely
- * 
- * Problem it solves:
- * - Slow/broken servers can cause requests to hang forever
- * - This blocks the UI and creates poor user experience
- * - Manual fetch implementations scattered across the codebase
- * - Inconsistent error handling and authentication patterns
- * 
- * How it works:
- * - Single function handles all HTTP methods (GET, POST, PUT, PATCH, DELETE)
- * - Automatic authentication - checks for auth token and includes it if available
- * - AbortController ensures requests complete within reasonable timeframe
- * - Consistent error formatting for all request types
- * - Special handling for DELETE requests that may not return JSON
- * 
+ * Unified API function with timeout and optional authentication
+ *
  * Features:
  * - Supports all HTTP methods (GET, POST, PUT, PATCH, DELETE)
- * - Automatic authentication (auto-adds Bearer token when available)
+ * - Optional authentication (includes Bearer token when authToken provided)
  * - Timeout protection (8 seconds default)
  * - Consistent error handling and response formatting
  * - Handles DELETE requests without response body parsing
@@ -40,7 +27,7 @@ async function apiWithTimeout(
 ): Promise<Response> {
   // Create controller to manage request cancellation
   const controller = new AbortController();
-  
+
   // Set up automatic cancellation after timeout period
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -61,37 +48,33 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
   url: string,
   options: ApiOptions<P>
 ): Promise<TStrapiResponse<T>> {
-  const { method, payload, timeoutMs = 8000 } = options;
+  const { method, payload, timeoutMs = 8000, authToken } = options;
 
   // Set up base headers for JSON communication
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  // Automatically check for auth token and include it if available
-  // Note: This only works in server-side contexts (server components, server actions)
-  // For client-side usage, consider using server actions instead
-  // let authToken: string | undefined;
-  // try {
-  //   authToken = await actions.auth.getAuthTokenAction();
-  // } catch {
-  //   // getAuthTokenAction is a server action and will fail on client-side
-  //   console.warn("Cannot access auth token from client-side. Use server actions for authenticated requests.");
-  //   authToken = undefined;
-  // }
-  
-  // if (authToken) {
-  //   headers["Authorization"] = `Bearer ${authToken}`;
-  // }
+  // Include Bearer token if provided (public requests when no token, authenticated when token provided)
+  if (authToken) {
+    headers["Authorization"] = `Bearer ${authToken}`;
+  }
 
   try {
     // Make the actual API request with timeout protection
-    const response = await apiWithTimeout(url, {
-      method,
-      headers,
-      // GET and DELETE requests don't have request bodies
-      body: method === "GET" || method === "DELETE" ? undefined : JSON.stringify(payload ?? {}),
-    }, timeoutMs);
+    const response = await apiWithTimeout(
+      url,
+      {
+        method,
+        headers,
+        // GET and DELETE requests don't have request bodies
+        body:
+          method === "GET" || method === "DELETE"
+            ? undefined
+            : JSON.stringify(payload ?? {}),
+      },
+      timeoutMs
+    );
 
     // Handle DELETE requests that may not return JSON response body
     if (method === "DELETE") {
@@ -118,9 +101,9 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
         status: response.status,
         statusText: response.statusText,
         data,
-        // hasAuthToken: !!authToken
+        hasAuthToken: !!authToken,
       });
-      
+
       // If Strapi returns a structured error, pass it through as-is
       if (data.error) {
         return {
@@ -129,13 +112,15 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
           status: response.status,
         };
       }
-      
+
       // Otherwise create a generic error response
       return {
         error: {
           status: response.status,
           name: data?.error?.name ?? "Error",
-          message: data?.error?.message ?? (response.statusText || "An error occurred"),
+          message:
+            data?.error?.message ??
+            (response.statusText || "An error occurred"),
         },
         success: false,
         status: response.status,
@@ -147,11 +132,11 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
     // We want to return: { data: {...}, meta: {...}, success: true, status: 200 }
     const responseData = data.data ? data.data : data;
     const responseMeta = data.meta ? data.meta : undefined;
-    return { 
-      data: responseData as T, 
+    return {
+      data: responseData as T,
       meta: responseMeta,
-      success: true, 
-      status: response.status 
+      success: true,
+      status: response.status,
     };
   } catch (error) {
     // Handle timeout errors specifically (when AbortController cancels the request)
@@ -174,7 +159,8 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
       error: {
         status: 500,
         name: "NetworkError",
-        message: error instanceof Error ? error.message : "Something went wrong",
+        message:
+          error instanceof Error ? error.message : "Something went wrong",
       },
       success: false,
       status: 500,
@@ -183,37 +169,41 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
 }
 
 /**
- * Convenience API methods for common HTTP operations
- * 
+ * Convenience API methods that support both public and authenticated requests
+ *
  * Usage examples:
- * 
- * // Public endpoints (work without authentication)
+ * // Public request
  * const homePage = await api.get<THomePage>('/api/home-page');
- * const authResult = await api.post<TAuthResponse, TLoginData>('/api/auth/local', loginData);
- * 
- * // Protected endpoints (automatically include auth token when available)
- * const userProfile = await api.get<TUser>('/api/users/me');
- * const updated = await api.put<TUser, TProfileData>('/api/users/123', profileData);
- * const deleted = await api.delete<boolean>('/api/posts/456');
+ *
+ * // Authenticated request
+ * const userProfile = await api.get<TUser>('/api/users/me', { authToken: 'your-token' });
  */
 export const api = {
-  // GET request - for fetching data
-  get: <T>(url: string, timeoutMs?: number) => 
-    apiRequest<T>(url, { method: "GET", timeoutMs }),
-  
-  // POST request - for creating new resources
-  post: <T, P = Record<string, unknown>>(url: string, payload: P, timeoutMs?: number) => 
-    apiRequest<T, P>(url, { method: "POST", payload, timeoutMs }),
-  
-  // PUT request - for updating entire resources
-  put: <T, P = Record<string, unknown>>(url: string, payload: P, timeoutMs?: number) => 
-    apiRequest<T, P>(url, { method: "PUT", payload, timeoutMs }),
-  
-  // PATCH request - for partial updates
-  patch: <T, P = Record<string, unknown>>(url: string, payload: P, timeoutMs?: number) => 
-    apiRequest<T, P>(url, { method: "PATCH", payload, timeoutMs }),
-  
-  // DELETE request - for removing resources
-  delete: <T>(url: string, timeoutMs?: number) => 
-    apiRequest<T>(url, { method: "DELETE", timeoutMs }),
+  get: <T>(
+    url: string,
+    options: { timeoutMs?: number; authToken?: string } = {}
+  ) => apiRequest<T>(url, { method: "GET", ...options }),
+
+  post: <T, P = Record<string, unknown>>(
+    url: string,
+    payload: P,
+    options: { timeoutMs?: number; authToken?: string } = {}
+  ) => apiRequest<T, P>(url, { method: "POST", payload, ...options }),
+
+  put: <T, P = Record<string, unknown>>(
+    url: string,
+    payload: P,
+    options: { timeoutMs?: number; authToken?: string } = {}
+  ) => apiRequest<T, P>(url, { method: "PUT", payload, ...options }),
+
+  patch: <T, P = Record<string, unknown>>(
+    url: string,
+    payload: P,
+    options: { timeoutMs?: number; authToken?: string } = {}
+  ) => apiRequest<T, P>(url, { method: "PATCH", payload, ...options }),
+
+  delete: <T>(
+    url: string,
+    options: { timeoutMs?: number; authToken?: string } = {}
+  ) => apiRequest<T>(url, { method: "DELETE", ...options }),
 };

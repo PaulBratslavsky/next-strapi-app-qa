@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { THeader } from "@/types";
 
+import { SummaryForm } from "@/components/forms/summary-form";
+
 import { services } from "@/data/services";
 
 import { Logo } from "@/components/custom/logo";
@@ -26,6 +28,7 @@ export async function Header({ data }: IHeaderProps) {
   return (
     <div className={styles.header}>
       <Logo text={logoText.label} />
+      {user.success && <SummaryForm />}
       <div className={styles.actions}>
         {user.success && user.data ? (
           <LoggedInUser userData={user.data} />

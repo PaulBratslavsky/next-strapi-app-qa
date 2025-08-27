@@ -20,7 +20,6 @@ export async function registerUserAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  console.log("Hello From Register User Action");
 
   const fields = {
     username: formData.get("username") as string,
@@ -32,7 +31,6 @@ export async function registerUserAction(
 
   if (!validatedFields.success) {
     const flattenedErrors = z.flattenError(validatedFields.error);
-    console.log("Validation failed:", flattenedErrors.fieldErrors);
     return {
       success: false,
       message: "Validation failed",
@@ -45,7 +43,6 @@ export async function registerUserAction(
     };
   }
 
-  console.log("Validation successful:", validatedFields.data);
 
   const responseData = await services.auth.registerUserService(
     validatedFields.data
@@ -78,10 +75,6 @@ export async function registerUserAction(
     };
   }
 
-  console.log("#############");
-  console.log("User Registered Successfully", responseData);
-  console.log("#############");
-
   const cookieStore = await cookies();
   cookieStore.set("jwt", responseData.jwt, config);
   redirect("/dashboard");
@@ -91,7 +84,6 @@ export async function loginUserAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  console.log("Hello From Login User Action");
 
   const fields = {
     identifier: formData.get("identifier") as string,
@@ -104,7 +96,6 @@ export async function loginUserAction(
 
   if (!validatedFields.success) {
     const flattenedErrors = z.flattenError(validatedFields.error);
-    console.log("Validation failed:", flattenedErrors.fieldErrors);
     return {
       success: false,
       message: "Validation failed",
@@ -116,8 +107,6 @@ export async function loginUserAction(
       },
     };
   }
-
-  console.log("Validation successful:", validatedFields.data);
 
   const responseData = await services.auth.loginUserService(
     validatedFields.data
@@ -149,10 +138,6 @@ export async function loginUserAction(
       },
     };
   }
-
-  console.log("#############");
-  console.log("User Login Successfully", responseData);
-  console.log("#############");
 
   const cookieStore = await cookies();
   cookieStore.set("jwt", responseData.jwt, config);

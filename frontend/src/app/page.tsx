@@ -12,7 +12,6 @@ function blockRenderer(block: TBlocks, index: number) {
     case "layout.hero-section":
       return <HeroSection key={index} data={block as IHeroSectionProps} />;
     case "layout.features-section":
-      console.log("Sections data:", block);
       return (
         <FeaturesSection key={index} data={block as IFeaturesSectionProps} />
       );

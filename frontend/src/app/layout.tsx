@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
 
 import { loaders } from "@/data/loaders";
 import { validateApiResponse } from "@/lib/error-handler";
@@ -42,6 +43,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster position="bottom-center" />
         <Header data={globalData?.header} />
         {children}
         <Footer data={globalData?.footer} />

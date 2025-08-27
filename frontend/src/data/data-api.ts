@@ -96,13 +96,16 @@ export async function apiRequest<T = unknown, P = Record<string, unknown>>(
 
     // Handle unsuccessful responses (4xx, 5xx status codes)
     if (!response.ok) {
-      console.error(`API ${method} error (${response.status}):`, {
-        url,
-        status: response.status,
-        statusText: response.statusText,
-        data,
-        hasAuthToken: !!authToken,
-      });
+      // Don't log 402 (business logic errors) as errors
+      if (response.status !== 402) {
+        console.error(`API ${method} error (${response.status}):`, {
+          url,
+          status: response.status,
+          statusText: response.statusText,
+          data,
+          hasAuthToken: !!authToken,
+        });
+      }
 
       // If Strapi returns a structured error, pass it through as-is
       if (data.error) {

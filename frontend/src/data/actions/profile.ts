@@ -13,7 +13,6 @@ export async function updateProfileAction(
   prevState: ProfileFormState,
   formData: FormData
 ): Promise<ProfileFormState> {
-  console.log("Hello From Login User Action");
 
   const fields = Object.fromEntries(formData);
 
@@ -23,7 +22,6 @@ export async function updateProfileAction(
 
   if (!validatedFields.success) {
     const flattenedErrors = z.flattenError(validatedFields.error);
-    console.log("Validation failed:", flattenedErrors.fieldErrors);
     return {
       success: false,
       message: "Validation failed",
@@ -35,8 +33,6 @@ export async function updateProfileAction(
       },
     };
   }
-
-  console.log("Validation successful:", validatedFields.data);
 
   const responseData = await services.profile.updateProfileService(
     validatedFields.data
@@ -68,10 +64,6 @@ export async function updateProfileAction(
     };
   }
 
-  console.log("#############");
-  console.log("User Login Successfully", responseData);
-  console.log("#############");
-
   return {
     success: false,
     message: "Successfully updated form",
@@ -88,7 +80,6 @@ export async function updateProfileImageAction(
   prevState: ProfileImageFormState,
   formData: FormData
 ): Promise<ProfileImageFormState> {
-  console.log("Hello From Update Profile Image Action");
 
   // Get current user
   const user = await services.auth.getUserMeService();
@@ -120,7 +111,6 @@ export async function updateProfileImageAction(
 
   if (!validatedFields.success) {
     const flattenedErrors = z.flattenError(validatedFields.error);
-    console.log("Validation failed:", flattenedErrors.fieldErrors);
     return {
       success: false,
       message: "Validation failed",
@@ -129,10 +119,6 @@ export async function updateProfileImageAction(
       data: prevState.data,
     };
   }
-
-  console.log("Validation successful:", validatedFields.data);
-  console.log(currentImageId);
-  console.log(currentImageId);
 
   // Delete previous image if exists
   if (currentImageId) {
@@ -176,10 +162,6 @@ export async function updateProfileImageAction(
       data: prevState.data,
     };
   }
-
-  console.log("#############");
-  console.log("Profile Image Updated Successfully");
-  console.log("#############");
 
   return {
     success: true,

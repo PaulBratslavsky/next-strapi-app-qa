@@ -44,10 +44,6 @@ export function SignupForm() {
     actions.auth.registerUserAction,
     INITIAL_STATE
   );
-
-  console.log("## will render on client ##");
-  console.log(formState);
-  console.log("###########################");
   return (
     <div className={styles.container}>
       <form action={formAction}>

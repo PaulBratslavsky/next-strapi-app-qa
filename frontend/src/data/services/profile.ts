@@ -28,7 +28,6 @@ export async function updateProfileService(
     { authToken }
   );
 
-  console.log("######### actual profile update response");
   console.dir(result, { depth: null });
 
   return result;

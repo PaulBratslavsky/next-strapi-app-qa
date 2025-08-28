@@ -5,6 +5,7 @@ import {
   getAuthTokenAction,
 } from "./auth";
 import { updateProfileAction, updateProfileImageAction } from "./profile";
+import { updateSummaryAction, deleteSummaryAction } from "./summary";
 
 export const actions = {
   auth: {
@@ -16,5 +17,9 @@ export const actions = {
   profile: {
     updateProfileAction,
     updateProfileImageAction,
+  },
+  summary: {
+    updateSummaryAction,
+    deleteSummaryAction,
   },
 };
